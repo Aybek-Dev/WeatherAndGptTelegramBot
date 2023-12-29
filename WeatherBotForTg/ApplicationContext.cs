@@ -9,6 +9,7 @@ namespace WeatherBotForTg
 {
     public class ApplicationContext:DbContext
     {
+        string configFotConnect;
         public DbSet<User> Users { get; set; }
         public ApplicationContext()
         {
@@ -16,7 +17,7 @@ namespace WeatherBotForTg
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            string configFotConnect = File.ReadAllText(@"C:\Users\AYBEK\Desktop\C# Home task\WeatherBotForTg\WeatherBotForTg\Configuration\ConfigForConnectDb.txt");
+            configFotConnect = File.ReadAllText(@"C:\Users\AYBEK\Desktop\C# Home task\WeatherBotForTg\WeatherBotForTg\Configuration\ConfigForConnectDb.txt");
             optionsBuilder.UseNpgsql(configFotConnect);
         }
     }

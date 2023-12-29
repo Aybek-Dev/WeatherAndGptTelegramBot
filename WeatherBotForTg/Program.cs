@@ -57,6 +57,7 @@ namespace WeatherBotForTg
             using var cts = new CancellationTokenSource();
             // UpdateHander - обработчик приходящих Update`ов
             // ErrorHandler - обработчик ошибок, связанных с Bot API
+
             botClient.StartReceiving(ChatHendler.UpdateHandler, HandlerError.ErrorHandler, _receiverOptions, cts.Token); // Запускаем бота
             var me = await botClient.GetMeAsync(); // Создаем переменную, в которую помещаем информацию о нашем боте.
             await Console.Out.WriteLineAsync($"{me.FirstName} запущен!");

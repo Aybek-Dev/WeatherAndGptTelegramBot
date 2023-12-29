@@ -10,17 +10,15 @@ namespace WeatherBotForTg.Service
 {
     public class CheckService
     {
-        public static bool ChekUser(long id)
+        public static  bool ChekUser(long id)
         {
             using (ApplicationContext _db = new())
             {
-                foreach(var user in _db.Users)
-                {
-                    if(user.UserId==id)
-                        return false;
-                };
+                var user =  _db.Users.FirstOrDefault(u => u.UserId == id);
+                if (user == null)
+                return true;
+                return false;
             }
-            return true;
         }
         public static async Task<(double Latitude, double Longitude)?> CheckUserLocation(long id)
         {

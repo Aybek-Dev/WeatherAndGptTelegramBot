@@ -18,6 +18,7 @@ namespace WeatherBotForTg
                 await botClient.SendTextMessageAsync(user.Id, "Ваши кординаты не найдены, устоновите их!");
 
         }
+
         public static async Task UpdateHandler(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
 
@@ -35,7 +36,7 @@ namespace WeatherBotForTg
                             case MessageType.Text:
                                 if (message.Text == "/start")
                                 {
-                                    UserCRUDServices.UserCreate(update);
+                                    await UserCRUDServices.UserCreate(update);
                                     await botClient.SendTextMessageAsync(
                                         user.Id,
                                         "Приветствую тебя 😊\r\nЯ помогу тебе получать  уведомления о погоде, с моей помощью ты всегда будешь в курсе ситуации \U0001f929\r\nТакже, я работаю на основе искусственного интеллекта и могу помочь с твоими задачами, а также поддержать разговор🤓");
@@ -90,7 +91,10 @@ namespace WeatherBotForTg
                         break;
                 }
             }
-            catch (Exception ex) { }
+            catch (Exception ex) 
+            {
+                await Console.Out.WriteLineAsync(ex.ToString());
+            }
         }
     }
 }
