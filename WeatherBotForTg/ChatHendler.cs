@@ -28,6 +28,7 @@ namespace WeatherBotForTg
                 {
                     case UpdateType.Message:
                         var message = update.Message;
+                        await botClient.SendTextMessageAsync(message.From.Id,$"{DateTime.Now.ToString()}");
                         var user = message.From;
                         await Console.Out.WriteLineAsync($"UserId: {user.Id} | FirstName: {user.FirstName} | UserName: {user.Username}");
                         await Console.Out.WriteLineAsync($"Message: {message.Text}");
