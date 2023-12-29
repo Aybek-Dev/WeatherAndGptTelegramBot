@@ -1,4 +1,5 @@
-﻿using Telegram.Bot;
+﻿using Npgsql.Replication.PgOutput.Messages;
+using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -22,13 +23,13 @@ namespace WeatherBotForTg
         public static async Task UpdateHandler(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
 
+            await botClient.SendTextMessageAsync(update.Message.From.Id,$"{DateTime.Now.ToString()}");
             try
             {
                 switch (update.Type)
                 {
                     case UpdateType.Message:
                         var message = update.Message;
-                        await botClient.SendTextMessageAsync(message.From.Id,$"{DateTime.Now.ToString()}");
                         var user = message.From;
                         await Console.Out.WriteLineAsync($"UserId: {user.Id} | FirstName: {user.FirstName} | UserName: {user.Username}");
                         await Console.Out.WriteLineAsync($"Message: {message.Text}");
