@@ -361,3 +361,10 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Api keys Gpt 
+GPTApiKeyForChat.txt
+GPTApiKeyForWeather.txt
+
+# Config for connect database
+ConfigForConnectDb.txt

@@ -1,64 +1,108 @@
-﻿using Azure.AI.OpenAI;
-using System.Net;
-using Telegram.Bot;
-using Telegram.Bot.Args;
+﻿using Telegram.Bot;
+using Telegram.Bot.Polling;
 using Telegram.Bot.Types.Enums;
 
 namespace WeatherBotForTg
 {
     class Program
     {
-        private const string url = "https://api.openweathermap.org/data/2.5/weather?lat=41.31&lon=69.28&appid=0b98b636af8a3c4cbf43994442587f0e";
-        private const string request = "расскажи про погоду вот так без лишних слов\r\nГород:  Ташкент\r\nпогода:  дождь\r\nтемпература: -10°C\r\nощущается как: -15°C\r\nвидимость: 2000м\r\nскорость ветра: примерно 2.06 м/с, с северо-запада.\r\nвлажность: 90%\r\nДавление: 1021 гПа\r\nВремя восхода солнца: 7:00\r\nВремя заката солнца: 19:00\r\nя рекомендую: Если вы собираетесь выходить на улицу, рекомендуется надеть теплую одежду, так как довольно прохладно, и возможен туман.\r\nи добавь подходящий смайлики";
-        static string finaliResult = String.Empty;
-        static private string tokek { get; set; } = "6679592489:AAFW3B8mwdZo17GUh0r2kHTG5Ta8KnGOoGY";
+        private static ReceiverOptions _receiverOptions;
+        static private string tokek { get; set; } = "6483778544:AAHaME6RjMfrGD4lxG-dxyZV4YB0ASAeTHg";
         private static ITelegramBotClient botClient;
         static async Task Main(string[] args)
         {
-            try
-            {
-                string jsonString;
-                using (HttpClient client = new HttpClient())
-                {
-                    jsonString = await client.GetStringAsync(url);
-                    await Console.Out.WriteLineAsync(jsonString);
-                }
-                jsonString += request;
-                OpenAIClient clientAI = new OpenAIClient("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");
-                var openAIResponse = await clientAI.GetChatCompletionsAsync("gpt-3.5-turbo-16k-0613", new ChatCompletionsOptions 
-                {
-                    Messages = { new ChatMessage(ChatRole.System,jsonString)}
-                });
-                //botClient = new TelegramBotClient(tokek);
-                //botClient.OnMessage += OnMessageHandler;
+            //try
+            //{
+            //    string jsonString;
+            //    using (HttpClient client = new HttpClient())
+            //    {
+            //        jsonString = await client.GetStringAsync(url);
+            //        await Console.Out.WriteLineAsync(jsonString);
+            //    }
+            //    jsonString += request;
+            //    OpenAIClient clientAI = new OpenAIClient("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");
+            //    var openAIResponse = await clientAI.GetChatCompletionsAsync("gpt-3.5-turbo-16k-0613", new ChatCompletionsOptions
+            //    {
+            //        Messages = { new ChatMessage(ChatRole.System, jsonString) }
+            //    });
 
-                finaliResult = String.Empty;
-                foreach (var item in openAIResponse.Value.Choices)
-                {
-                    finaliResult += item.Message.Content;
-                    //sawait Console.Out.WriteLineAsync(item.Text);
-                }
-                await Console.Out.WriteLineAsync(finaliResult);
-            }
-            catch (Exception ex)
+            //    finaliResult = String.Empty;
+            //    foreach (var item in openAIResponse.Value.Choices)
+            //    {
+            //        finaliResult += item.Message.Content;
+            //    }
+            //    await Console.Out.WriteLineAsync(finaliResult);
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine($"Произошла ошибка: {ex.Message}");
+            //
+
+            //// botClient = new TelegramBotClient(tokek);
+            ////// botClient.OnMessage += BotOnMessageReceived;
+            //// botClient.StartReceiving();
+            //// Console.ReadLine();
+            //// botClient.StopReceiving();
+            botClient = new TelegramBotClient(tokek); // Присваиваем нашей переменной значение, в параметре передаем Token, полученный от BotFather
+            _receiverOptions = new ReceiverOptions // Также присваем значение настройкам бота
             {
-                Console.WriteLine($"Произошла ошибка: {ex.Message}");
-            }
+                AllowedUpdates = new[] // Тут указываем типы получаемых Update`ов, о них подробнее расказано тут https://core.telegram.org/bots/api#update
+                {
+                UpdateType.Message, // Сообщения (текст, фото/видео, голосовые/видео сообщения и т.д.)
+            },
+                // Параметр, отвечающий за обработку сообщений, пришедших за то время, когда ваш бот был оффлайн
+                // True - не обрабатывать, False (стоит по умолчанию) - обрабаывать
+                ThrowPendingUpdates = true,
+            };
+            using var cts = new CancellationTokenSource();
+            // UpdateHander - обработчик приходящих Update`ов
+            // ErrorHandler - обработчик ошибок, связанных с Bot API
+            botClient.StartReceiving(ChatHendler.UpdateHandler, HandlerError.ErrorHandler, _receiverOptions, cts.Token); // Запускаем бота
+            var me = await botClient.GetMeAsync(); // Создаем переменную, в которую помещаем информацию о нашем боте.
+            await Console.Out.WriteLineAsync($"{me.FirstName} запущен!");
+            await Task.Delay(-1); // Устанавливаем бесконечную задержку, чтобы наш бот работал постоянно
         }
 
-        private static async void OnMessageHandler(object sender, MessageEventArgs e)
-        {
-            var message = e.Message;
-
-            if (message == null || message.Type != MessageType.Text)
-                return;
-
-            // Обработка входящего текстового сообщения
-            Console.WriteLine($"Получено текстовое сообщение: {message.Text}");
-            await botClient.SendTextMessageAsync(chatId: e.Message.Chat, text:$"{finaliResult}" ).ConfigureAwait(false);
-
-            // Добавьте свою логику обработки сообщения или другие действия.
-        }
-
+        //private async static void BotOnMessageReceived(object? sender, MessageEventArgs e)
+        //{
+        //    var message = e.Message;
+        //    var user = message.Chat;
+        //    if (message == null || message.Type != MessageType.Text)
+        //    {
+        //        await botClient.SendTextMessageAsync(message.Chat, $"Извините, я пока что умею работать только с текстом, остальные вопросы к моему разработчикку @wolleY_47");
+        //        return;
+        //    }
+        //    else if (string.Equals(message.Text, "погода", StringComparison.OrdinalIgnoreCase))
+        //    {
+        //        string jsonString;
+        //        using (HttpClient client = new HttpClient())
+        //        {
+        //            jsonString = await client.GetStringAsync(url);
+        //        }
+        //        jsonString += "\n" + request2;
+        //        jsonString = await ChatGptConnect(jsonString);
+        //        await Console.Out.WriteLineAsync(jsonString);
+        //        await botClient.SendTextMessageAsync(message.Chat, jsonString);
+        //        return;
+        //    }
+        //    await Console.Out.WriteLineAsync($"first name:{message.Chat.FirstName}: {message.Text}");
+        //    string result = await ChatGptConnect(message.Text);
+        //    await Console.Out.WriteLineAsync(result);
+        //    await botClient.SendTextMessageAsync(message.Chat, result);
+        //}
+        //private async static Task<string> ChatGptConnect(string message)
+        //{
+        //    string finnalyAnsver = String.Empty;
+        //    OpenAIClient clientAI = new OpenAIClient("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");
+        //    var openAIResponse = await clientAI.GetChatCompletionsAsync("gpt-3.5-turbo-16k-0613", new ChatCompletionsOptions
+        //    {
+        //        Messages = { new ChatMessage(ChatRole.System, message) }
+        //    });
+        //    foreach (var item in openAIResponse.Value.Choices)
+        //    {
+        //        finnalyAnsver += item.Message.Content;
+        //    }
+        //    return finnalyAnsver ?? "";
+        //}
     }
 }
