@@ -7,7 +7,7 @@ namespace WeatherBotForTg
     class Program
     {
         private static ReceiverOptions _receiverOptions;
-        static private string tokek { get; set; } = "6483778544:AAHaME6RjMfrGD4lxG-dxyZV4YB0ASAeTHg";
+        static private string tokek { get; set; } = File.ReadAllText(@"C:\Users\AYBEK\Desktop\C# Home task\WeatherBotForTg\WeatherBotForTg\Configuration\BotToken.txt");
         private static ITelegramBotClient botClient;
         static async Task Main(string[] args)
         {
@@ -93,7 +93,7 @@ namespace WeatherBotForTg
         //private async static Task<string> ChatGptConnect(string message)
         //{
         //    string finnalyAnsver = String.Empty;
-        //    OpenAIClient clientAI = new OpenAIClient("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");
+        //    OpenAIClient clientAI = new OpenAIClient("");
         //    var openAIResponse = await clientAI.GetChatCompletionsAsync("gpt-3.5-turbo-16k-0613", new ChatCompletionsOptions
         //    {
         //        Messages = { new ChatMessage(ChatRole.System, message) }
