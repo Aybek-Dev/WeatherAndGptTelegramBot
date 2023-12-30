@@ -25,11 +25,8 @@ namespace WeatherBotForTg.Service
             using (ApplicationContext _db = new())
             {
                 var user = await _db.Users.FirstOrDefaultAsync(u => u.UserId == id);
-                if (user == null)
-                {
+                if (user == null||user.Latitude==0&&user.Longitude==0)
                     return null;
-                }
-
                 return (user.Latitude, user.Longitude);
             }
         }
