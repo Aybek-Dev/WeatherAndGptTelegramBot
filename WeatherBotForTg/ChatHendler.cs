@@ -9,21 +9,10 @@ namespace WeatherBotForTg
 {
     public class ChatHendler
     {
-        public static async Task ShowWeatherGtpI(Update update, ITelegramBotClient botClient)
-        {
-            var user = update.Message.Chat;
-            var resulet = await ShowWeather.GetResultFromGpt(user.Id);
-            if (resulet != null)
-                await botClient.SendTextMessageAsync(user.Id, resulet);
-            else
-                await botClient.SendTextMessageAsync(user.Id, "Ваши кординаты не найдены, устоновите их!");
-
-        }
+        
 
         public static async Task UpdateHandler(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
-
-            await botClient.SendTextMessageAsync(update.Message.From.Id,$"{DateTime.Now.ToString()}");
             try
             {
                 switch (update.Type)
@@ -67,7 +56,7 @@ namespace WeatherBotForTg
                                 }
                                 else if (message.Text == "Погода☀️")
                                 {
-                                    await ShowWeatherGtpI(update, botClient);
+                                    _ = ShowWeather.ShowWeatherGpt(update, botClient);
                                 }
                                 else if (message.Text == "Часы оповещения🕘")
                                 {
@@ -75,19 +64,21 @@ namespace WeatherBotForTg
                                 }
                                 else if (message.Text == "Chat Gpt")
                                 {
-                                    botClient.SendTextMessageAsync(user.Id, "Слушаю вас внимательно");
+                                    _ = botClient.SendTextMessageAsync(user.Id, "Слушаю вас внимательно");
                                 }
                                 else
                                 {
-                                    var result = await СhatGptRequest.ConnectFromGpt(message.Text);
-                                    await botClient.SendTextMessageAsync(user.Id, result);
-                                    return;
+                                    _ =Task.Run(async () =>
+                                    {
+                                        var result = await СhatGptRequest.ConnectFromGpt(message.Text);
+                                        await botClient.SendTextMessageAsync(user.Id, result);
+                                    });
                                 }
                                 break;
                             case MessageType.Location:
                                 double latitude = message.Location.Latitude;
                                 double longitude = message.Location.Longitude;
-                                await UserCRUDServices.UserUpdataLocation(update, latitude, longitude);
+                                _ = UserCRUDServices.UserUpdataLocation(update, latitude, longitude);
                                 break;
                         }
                         break;

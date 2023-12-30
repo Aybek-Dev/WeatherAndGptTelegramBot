@@ -368,3 +368,9 @@ GPTApiKeyForWeather.txt
 
 # Config for connect database
 ConfigForConnectDb.txt
+
+# api key open Weather Map
+OpenWeatherMapApi.txt
+
+# telegram token
+BotToken.txt

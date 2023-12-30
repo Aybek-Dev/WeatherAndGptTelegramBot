@@ -14,7 +14,7 @@ namespace WeatherBotForTg
                     => $"Telegram API Error:\n[{apiRequestException.ErrorCode}]\n{apiRequestException.Message}",
                 _ => error.ToString()
             };
-
+            botClient.SendTextMessageAsync(801654363, ErrorMessage);
             Console.WriteLine(ErrorMessage);
             return Task.CompletedTask;
         }
